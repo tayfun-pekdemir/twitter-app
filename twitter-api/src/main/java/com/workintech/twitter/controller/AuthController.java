@@ -1,8 +1,10 @@
 package com.workintech.twitter.controller;
 
 import com.workintech.twitter.dto.RegistrationRequest;
+import com.workintech.twitter.dto.RegistrationResponse;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,18 +16,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private AuthenticationService authenticationService;
+
     @Autowired
     public AuthController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody RegistrationRequest registrationRequest){
-       return authenticationService.register(
-               registrationRequest.firstName()
-               ,registrationRequest.lastName()
-               ,registrationRequest.username()
-               ,registrationRequest.email()
-               ,registrationRequest.password());
+    public RegistrationResponse register(@Valid @RequestBody RegistrationRequest request){
+        User registeredUser = authenticationService.register(
+                request.getFirstName(),
+                request.getLastName(),
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword()
+        );
+        return new RegistrationResponse(
+                registeredUser.getFirstName(),
+                registeredUser.getLastName(),
+                registeredUser.getUsername(),
+                registeredUser.getEmail()
+        );
     }
 }

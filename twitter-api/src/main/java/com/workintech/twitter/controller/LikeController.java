@@ -1,18 +1,19 @@
 package com.workintech.twitter.controller;
 
+import com.workintech.twitter.dto.LikeRequest;
+import com.workintech.twitter.dto.LikeResponse;
 import com.workintech.twitter.entity.Like;
 import com.workintech.twitter.service.LikeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LikeController {
 
     private LikeService likeService;
+
     @Autowired
     public LikeController(LikeService likeService) {
         this.likeService = likeService;
@@ -20,15 +21,15 @@ public class LikeController {
 
     @PostMapping("/like")
     @ResponseStatus(HttpStatus.CREATED)
-    public Like like(@RequestParam Long tweetId,@RequestParam Long userId){
-        return likeService.like(tweetId,userId);
-    };
+    public LikeResponse like(@Valid @RequestBody LikeRequest request) {
+        Like like = likeService.like(request.getTweetId(), request.getUserId());
+        return new LikeResponse(like.getId(), like.getUser().getId(), like.getTweet().getId());
+    }
 
     @PostMapping("/dislike")
     @ResponseStatus(HttpStatus.OK)
-    public Like disLike(@RequestParam Long tweetId,@RequestParam Long userId){
-        return likeService.disLike(tweetId,userId) ;
+    public LikeResponse dislike(@Valid @RequestBody LikeRequest request) {
+        Like like = likeService.disLike(request.getTweetId(), request.getUserId());
+        return new LikeResponse(like.getId(), like.getUser().getId(), like.getTweet().getId());
     }
-
 }
-

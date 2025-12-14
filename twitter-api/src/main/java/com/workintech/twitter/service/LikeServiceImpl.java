@@ -47,7 +47,7 @@ public class LikeServiceImpl implements LikeService {
             likeRepository.delete(existingLike);
             return existingLike;
         } else {
-            return null;
+            throw new RuntimeException("You are not allowed to dislike this tweet");
         }
     }
 }

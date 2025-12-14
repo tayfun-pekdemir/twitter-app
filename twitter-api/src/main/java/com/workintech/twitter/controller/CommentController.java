@@ -1,7 +1,10 @@
 package com.workintech.twitter.controller;
 
+import com.workintech.twitter.dto.CommentRequest;
+import com.workintech.twitter.dto.CommentResponse;
 import com.workintech.twitter.entity.Comment;
 import com.workintech.twitter.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private CommentService commentService;
+
     @Autowired
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
@@ -18,19 +22,49 @@ public class CommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Comment createComment(@RequestParam Long userId,@RequestParam Long tweetId,@RequestBody Comment comment) {
-        return commentService.createComment(userId,tweetId,comment);
+    public CommentResponse createComment(@Valid @RequestBody CommentRequest request) {
+        Comment comment = new Comment();
+        comment.setContent(request.getContent());
+
+        Comment savedComment = commentService.createComment(request.getUserId(), request.getTweetId(), comment);
+
+        return new CommentResponse(
+                savedComment.getId(),
+                savedComment.getContent(),
+                savedComment.getUser().getId(),
+                savedComment.getTweet().getId()
+        );
     }
 
     @PutMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
-    public Comment updateComment(@PathVariable Long commentId,@RequestParam Long userId,@RequestBody Comment comment){
-        return commentService.updateComment(commentId,userId,comment);
+    public CommentResponse updateComment(
+            @PathVariable Long commentId,
+            @Valid @RequestBody CommentRequest request
+    ) {
+        Comment comment = new Comment();
+        comment.setContent(request.getContent());
+
+        Comment updatedComment = commentService.updateComment(commentId, request.getUserId(), comment);
+
+        return new CommentResponse(
+                updatedComment.getId(),
+                updatedComment.getContent(),
+                updatedComment.getUser().getId(),
+                updatedComment.getTweet().getId()
+        );
     }
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
-    public  Comment deleteComment(@PathVariable Long commentId,@RequestParam Long userId){
-        return commentService.deleteComment(commentId,userId);
+    public CommentResponse deleteComment(@PathVariable Long commentId, @RequestBody CommentRequest request) {
+        Comment deletedComment = commentService.deleteComment(commentId, request.getUserId());
+
+        return new CommentResponse(
+                deletedComment.getId(),
+                deletedComment.getContent(),
+                deletedComment.getUser().getId(),
+                deletedComment.getTweet().getId()
+        );
     }
 }
