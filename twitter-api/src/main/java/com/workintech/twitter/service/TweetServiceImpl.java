@@ -2,6 +2,8 @@ package com.workintech.twitter.service;
 
 import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.entity.User;
+import com.workintech.twitter.exception.NotAllowedException;
+import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.TweetRepository;
 import com.workintech.twitter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,9 @@ public class TweetServiceImpl implements TweetService{
     @Override
     public Tweet createTweet(Long userId, Tweet tweet) {
 
-        User user = userRepository.findById(userId).orElseThrow(/*Exception*/);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User not found by ID: " + userId)
+        );
         tweet.setUser(user);
         return tweetRepository.save(tweet);
     }
@@ -37,7 +41,9 @@ public class TweetServiceImpl implements TweetService{
 
     @Override
     public Tweet findById(Long tweetId) {
-        return tweetRepository.findById(tweetId).orElseThrow(/*Exception*/);
+        return tweetRepository.findById(tweetId).orElseThrow(
+                () -> new NotFoundException("Tweet not found by ID: " + tweetId)
+        );
     }
 
     @Override
@@ -47,7 +53,7 @@ public class TweetServiceImpl implements TweetService{
             existingTweet.setContent(tweet.getContent());
             return tweetRepository.save(existingTweet);
         } else {
-            throw new RuntimeException("You are not allowed to update this tweet");
+            throw new NotAllowedException("You are not allowed to update this tweet");
         }
     }
 
@@ -58,7 +64,7 @@ public class TweetServiceImpl implements TweetService{
             tweetRepository.delete(tweet);
             return tweet;
         } else {
-            throw new RuntimeException("You are not allowed to delete this tweet");
+            throw new NotAllowedException("You are not allowed to delete this tweet");
         }
 
     }

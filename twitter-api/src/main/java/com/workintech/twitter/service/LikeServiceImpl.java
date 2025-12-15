@@ -3,6 +3,9 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Like;
 import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.entity.User;
+import com.workintech.twitter.exception.DuplicateException;
+import com.workintech.twitter.exception.NotAllowedException;
+import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.LikeRepository;
 import com.workintech.twitter.repository.TweetRepository;
 import com.workintech.twitter.repository.UserRepository;
@@ -25,8 +28,16 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public Like like(Long tweetId, Long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(/*Exception*/);
-        Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(/*Exception*/);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User not found by ID: " + userId)
+        );
+        Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(
+                () -> new NotFoundException("Tweet not found by ID: " + tweetId)
+        );
+
+        if (likeRepository.findByUserAndTweet(user, tweet).isPresent()) {
+            throw new DuplicateException("User already liked this tweet");
+        }
 
         Like like = new Like();
         like.setUser(user);
@@ -37,17 +48,17 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public Like disLike(Long tweetId, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(/*Exception*/);
+                .orElseThrow(
+                        () -> new NotFoundException("User not found by ID: " + userId)
+                );
         Tweet tweet = tweetRepository.findById(tweetId)
-                .orElseThrow(/*Exception*/);
+                .orElseThrow(
+                        () -> new NotFoundException("Tweet not found by ID: " + tweetId)
+                );
 
-        Like existingLike = likeRepository.findByUserAndTweet(user, tweet).orElse(null);
-
-        if (existingLike != null) {
-            likeRepository.delete(existingLike);
-            return existingLike;
-        } else {
-            throw new RuntimeException("You are not allowed to dislike this tweet");
-        }
+        Like existingLike = likeRepository.findByUserAndTweet(user, tweet)
+                .orElseThrow(() -> new NotAllowedException("You are not allowed to dislike this tweet"));
+        likeRepository.delete(existingLike);
+        return existingLike;
     }
 }

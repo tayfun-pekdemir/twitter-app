@@ -1,5 +1,6 @@
 package com.workintech.twitter.service;
 
+import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(/*Exception*/);
+                .orElseThrow(
+                        () -> new NotFoundException("Username not found : " + username)
+                );
     }
 }

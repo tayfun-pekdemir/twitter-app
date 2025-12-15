@@ -3,6 +3,8 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Comment;
 import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.entity.User;
+import com.workintech.twitter.exception.NotAllowedException;
+import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.CommentRepository;
 import com.workintech.twitter.repository.TweetRepository;
 import com.workintech.twitter.repository.UserRepository;
@@ -24,8 +26,10 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public Comment createComment(Long userId,Long tweetId,Comment comment) {
-        User user = userRepository.findById(userId).orElseThrow(/*Exception*/);
-        Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(/*Exception*/);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("User not found by ID: " + userId));
+        Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(
+                () -> new NotFoundException("Tweet not found by ID: " + tweetId));
         comment.setUser(user);
         comment.setTweet(tweet);
         return commentRepository.save(comment) ;
@@ -33,23 +37,27 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     public Comment updateComment(Long commentId,Long userId, Comment comment) {
-        Comment existingComment = commentRepository.findById(commentId).orElseThrow(/*Exception*/);
+        Comment existingComment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment not found by ID: " + commentId)
+        );
         if(existingComment.getUser().getId().equals(userId)){
             existingComment.setContent(comment.getContent());
             return commentRepository.save(existingComment);
         } else {
-            throw new RuntimeException("You are not allowed to update this comment");
+            throw new NotAllowedException("You are not allowed to update this comment");
         }
     }
 
     @Override
     public Comment deleteComment(Long commentId, Long userId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(/*Exception*/);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException("Comment not found by ID: " + commentId)
+        );
         if(comment.getUser().getId().equals(userId) || comment.getTweet().getUser().getId().equals(userId)) {
             commentRepository.delete(comment);
             return comment;
         } else {
-            throw new RuntimeException("You are not allowed to delete this comment");
+            throw new NotAllowedException("You are not allowed to delete this comment") ;
         }
     }
 }
