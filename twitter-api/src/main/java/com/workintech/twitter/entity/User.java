@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Column(name="user_name", unique = true)
     @NotBlank
     @Size(min=4,max = 30)
-    private String username;
+    private String userName;
 
     @Column(name="email", unique = true)
     @NotBlank
@@ -71,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     @Override

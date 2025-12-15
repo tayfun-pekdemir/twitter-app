@@ -1,7 +1,6 @@
 package com.workintech.twitter.controller;
 
-import com.workintech.twitter.dto.RegistrationRequest;
-import com.workintech.twitter.dto.RegistrationResponse;
+import com.workintech.twitter.dto.*;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.service.AuthenticationService;
 import jakarta.validation.Valid;
@@ -27,7 +26,7 @@ public class AuthController {
         User registeredUser = authenticationService.register(
                 request.getFirstName(),
                 request.getLastName(),
-                request.getUsername(),
+                request.getUserName(),
                 request.getEmail(),
                 request.getPassword()
         );
@@ -37,5 +36,12 @@ public class AuthController {
                 registeredUser.getUsername(),
                 registeredUser.getEmail()
         );
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest){
+        User user = authenticationService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return new LoginResponse("Login successful for user: " + user.getUsername()
+        ,new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail()));
     }
 }

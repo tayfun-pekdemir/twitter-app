@@ -6,21 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
-public class RegistrationRequest {
-
-    @NotBlank
-    @Size(min = 2, max = 30)
-    private String firstName;
-
-    @NotBlank
-    @Size(min = 2, max = 30)
-    private String lastName;
-
-    @NotBlank
-    @Size(min = 4, max = 30)
-    private String userName;
+@Data
+public class LoginRequest {
 
     @NotBlank
     @Email

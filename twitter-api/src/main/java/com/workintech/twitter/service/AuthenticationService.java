@@ -3,6 +3,7 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Role;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.exception.DuplicateException;
+import com.workintech.twitter.exception.NotAllowedException;
 import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.RoleRepository;
 import com.workintech.twitter.repository.UserRepository;
@@ -26,9 +27,9 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User register(String firstName,String lastName,String username,String email,String password){
+    public User register(String firstName,String lastName,String userName,String email,String password){
 
-        if(userRepository.findByUsername(username).isPresent()){
+        if(userRepository.findByUserName(userName).isPresent()){
             throw new DuplicateException("Username already exists");
         }
 
@@ -44,11 +45,21 @@ public class AuthenticationService {
         user.setEmail(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setUsername(username);
+        user.setUserName(userName);
         user.setPassword(encodedPassword);
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setAuthorities(roles);
         return userRepository.save(user);
+    }
+
+    public User login(String email,String password){
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException("User not found by email: " + email));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new NotAllowedException("Invalid email or password");
+        }
+        return user;
     }
 }
