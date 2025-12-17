@@ -30,6 +30,8 @@ public class CommentServiceImpl implements CommentService{
                 () -> new NotFoundException("User not found by ID: " + userId));
         Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(
                 () -> new NotFoundException("Tweet not found by ID: " + tweetId));
+        tweet.incrementCommentCount();
+        tweetRepository.save(tweet);
         comment.setUser(user);
         comment.setTweet(tweet);
         return commentRepository.save(comment) ;
@@ -54,6 +56,9 @@ public class CommentServiceImpl implements CommentService{
                 () -> new NotFoundException("Comment not found by ID: " + commentId)
         );
         if(comment.getUser().getId().equals(userId) || comment.getTweet().getUser().getId().equals(userId)) {
+            Tweet tweet = comment.getTweet();
+            tweet.decrementCommentCount();
+            tweetRepository.save(tweet);
             commentRepository.delete(comment);
             return comment;
         } else {

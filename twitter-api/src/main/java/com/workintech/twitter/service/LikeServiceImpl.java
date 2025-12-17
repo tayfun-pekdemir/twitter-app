@@ -42,6 +42,8 @@ public class LikeServiceImpl implements LikeService {
         Like like = new Like();
         like.setUser(user);
         like.setTweet(tweet);
+        tweet.incrementLikeCount();
+        tweetRepository.save(tweet);
         return likeRepository.save(like);
     }
 
@@ -58,6 +60,8 @@ public class LikeServiceImpl implements LikeService {
 
         Like existingLike = likeRepository.findByUserAndTweet(user, tweet)
                 .orElseThrow(() -> new NotAllowedException("You are not allowed to dislike this tweet"));
+        tweet.decrementLikeCount();
+        tweetRepository.save(tweet);
         likeRepository.delete(existingLike);
         return existingLike;
     }

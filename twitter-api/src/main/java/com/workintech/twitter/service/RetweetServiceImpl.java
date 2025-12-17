@@ -41,6 +41,8 @@ public class RetweetServiceImpl implements RetweetService{
         Retweet retweet = new Retweet();
         retweet.setUser(user);
         retweet.setTweet(tweet);
+        tweet.incrementRetweetCount();
+        tweetRepository.save(tweet);
         return retweetRepository.save(retweet);
     }
 
@@ -50,6 +52,9 @@ public class RetweetServiceImpl implements RetweetService{
                 () -> new NotFoundException("Retweet not found by ID: " + retweetId)
         );
         if(retweet.getUser().getId().equals(userId)) {
+            Tweet tweet = retweet.getTweet();
+            tweet.decrementRetweetCount();
+            tweetRepository.save(tweet);
             retweetRepository.delete(retweet);
             return retweet;
         } else {

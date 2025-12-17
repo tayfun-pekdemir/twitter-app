@@ -1,25 +1,62 @@
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Login() {
 
+  const initialFormData = {
+    email:"",
+    password:""
+  }
+
+  const navigate = useNavigate();
+
+  const [formData,setFormData] = useState(initialFormData);
+  const [error,setError] = useState("")
+
+  const handleChange = (e) => {
+
+    setFormData({...formData,[e.target.name]:e.target.value});
+  }
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+    axios.post("http://localhost:3000/auth/login",formData,{withCredentials:true})
+      .then(response => {
+        console.log(response.data);
+        navigate(`/profile/${response.data.user.id}`)
+      })
+      .catch(error => {
+        console.error(error);
+        setError(error.response.data.message || "Login error");
+      })
+  }
     
   return (
     <div className="w-full max-w-sm bg-[#2C2E3A] p-6 rounded-xl shadow-lg shadow-black/50">
       <h2 className="text-2xl font-semibold text-center mb-6 text-[#B3B4BD]">
         Login
       </h2>
-
-      <form className="flex flex-col gap-4">
+      {error && <p className="text-red-500 text-sm text-center mb-2">{error}</p>}
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           type="email"
+          name="email"
+          value={formData.email}
           placeholder="Email"
+          onChange={handleChange}
           className="bg-[#141619] placeholder-[#B3B4BD] text-[#B3B4BD] rounded-md shadow-lg shadow-black/50 px-4 py-2 w-full
                        focus:outline-none focus:ring-2 focus:ring-[#0A21C0]"
         />
 
         <input
           type="password"
+          name="password"
+          value={formData.password}
           placeholder="Password"
+          onChange={handleChange}
           className="bg-[#141619] placeholder-[#B3B4BD] text-[#B3B4BD] rounded-md shadow-lg shadow-black/50 px-4 py-2 w-full
                        focus:outline-none focus:ring-2 focus:ring-[#0A21C0]"
         />

@@ -3,6 +3,7 @@ package com.workintech.twitter.controller;
 import com.workintech.twitter.dto.DeleteTweetRequest;
 import com.workintech.twitter.dto.TweetRequest;
 import com.workintech.twitter.dto.TweetResponse;
+import com.workintech.twitter.dto.UserDTO;
 import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.service.TweetService;
 import jakarta.validation.Valid;
@@ -32,11 +33,7 @@ public class TweetController {
 
         Tweet savedTweet = tweetService.createTweet(request.getUserId(), tweet);
 
-        return new TweetResponse(
-                savedTweet.getId(),
-                savedTweet.getContent(),
-                savedTweet.getUser().getId()
-        );
+        return mapToResponse(savedTweet);
     }
 
     @GetMapping("/findByUserId/{userId}")
@@ -46,11 +43,7 @@ public class TweetController {
         List<TweetResponse> responseList = new ArrayList<>();
 
         for (Tweet tweet : tweets) {
-            responseList.add(new TweetResponse(
-                    tweet.getId(),
-                    tweet.getContent(),
-                    tweet.getUser().getId()
-            ));
+            responseList.add(mapToResponse(tweet));
         }
         return responseList;
     }
@@ -59,11 +52,7 @@ public class TweetController {
     @ResponseStatus(HttpStatus.OK)
     public TweetResponse findById(@PathVariable Long tweetId) {
         Tweet tweet = tweetService.findById(tweetId);
-        return new TweetResponse(
-                tweet.getId(),
-                tweet.getContent(),
-                tweet.getUser().getId()
-        );
+        return mapToResponse(tweet);
     }
 
     @PutMapping("/{tweetId}")
@@ -75,11 +64,8 @@ public class TweetController {
 
         Tweet updatedTweet = tweetService.updateTweet(tweetId, request.getUserId(), tweet);
 
-        return new TweetResponse(
-                updatedTweet.getId(),
-                updatedTweet.getContent(),
-                updatedTweet.getUser().getId()
-        );
+        return mapToResponse(updatedTweet);
+
     }
 
     @DeleteMapping("/{tweetId}")
@@ -88,10 +74,22 @@ public class TweetController {
                                      @Valid @RequestBody DeleteTweetRequest request) {
         Tweet deletedTweet = tweetService.deleteTweet(tweetId, request.getUserId());
 
+        return mapToResponse(deletedTweet);
+
+    }
+    private TweetResponse mapToResponse(Tweet tweet) {
         return new TweetResponse(
-                deletedTweet.getId(),
-                deletedTweet.getContent(),
-                deletedTweet.getUser().getId()
+                tweet.getId(),
+                tweet.getContent(),
+                new UserDTO(tweet.getUser().getId(),
+                        tweet.getUser().getFirstName(),
+                        tweet.getUser().getLastName(),
+                        tweet.getUser().getUsername(),
+                        tweet.getUser().getEmail()),
+                tweet.getLikeCount(),
+                tweet.getRetweetCount(),
+                tweet.getCommentCount()
         );
     }
+
 }
