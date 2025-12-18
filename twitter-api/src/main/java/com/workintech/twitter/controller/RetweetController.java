@@ -1,6 +1,5 @@
 package com.workintech.twitter.controller;
 
-import com.workintech.twitter.dto.DeleteRetweetRequest;
 import com.workintech.twitter.dto.RetweetRequest;
 import com.workintech.twitter.dto.RetweetResponse;
 import com.workintech.twitter.entity.Retweet;
@@ -24,15 +23,14 @@ public class RetweetController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RetweetResponse retweet(@Valid @RequestBody RetweetRequest request){
-        Retweet retweet = retweetService.retweet(request.getUserId(), request.getTweetId());
+        Retweet retweet = retweetService.retweet(request.getTweetId());
         return new RetweetResponse(retweet.getId(), retweet.getUser().getId(), retweet.getTweet().getId());
     }
 
     @DeleteMapping("/{retweetId}")
     @ResponseStatus(HttpStatus.OK)
-    public RetweetResponse deleteRetweet(@PathVariable Long retweetId,
-                                         @Valid @RequestBody DeleteRetweetRequest request) {
-        Retweet retweet = retweetService.deleteRetweet(retweetId, request.getUserId());
+    public RetweetResponse deleteRetweet(@PathVariable Long retweetId) {
+        Retweet retweet = retweetService.deleteRetweet(retweetId);
         return new RetweetResponse(retweet.getId(), retweet.getUser().getId(), retweet.getTweet().getId());
     }
 }

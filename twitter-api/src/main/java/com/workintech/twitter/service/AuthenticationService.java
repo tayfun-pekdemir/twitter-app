@@ -27,10 +27,10 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User register(String firstName,String lastName,String userName,String email,String password){
+    public User register(String firstName,String lastName,String accountName,String email,String password){
 
-        if(userRepository.findByUserName(userName).isPresent()){
-            throw new DuplicateException("Username already exists");
+        if(userRepository.findByAccountName(accountName).isPresent()){
+            throw new DuplicateException("Account name already exists");
         }
 
         if(userRepository.findByEmail(email).isPresent()){
@@ -45,7 +45,7 @@ public class AuthenticationService {
         user.setEmail(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setUserName(userName);
+        user.setAccountName(accountName);
         user.setPassword(encodedPassword);
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);

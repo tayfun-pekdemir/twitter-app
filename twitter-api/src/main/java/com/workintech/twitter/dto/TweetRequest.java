@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class TweetRequest {
-    @NotNull
-    private Long userId;
 
     @NotBlank
     @Size(max = 280)

@@ -6,11 +6,14 @@ import java.util.List;
 
 public interface TweetService {
 
-    Tweet createTweet(Long userId,Tweet tweet);
+    Tweet createTweet(Tweet tweet);
+
     List<Tweet> findTweetsByUserId(Long userId);
+
     Tweet findById(Long tweetId);
-    Tweet updateTweet(Long tweetId,Long userId,Tweet tweet);
-    Tweet deleteTweet(Long tweetId,Long userId);
 
+    Tweet updateTweet(Long tweetId, Tweet tweet);
 
+    Tweet deleteTweet(Long tweetId);
 }
+

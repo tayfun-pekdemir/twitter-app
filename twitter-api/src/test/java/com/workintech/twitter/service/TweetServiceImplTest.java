@@ -3,7 +3,6 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Tweet;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.repository.TweetRepository;
-import com.workintech.twitter.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -27,12 +25,13 @@ class TweetServiceImplTest {
     TweetRepository tweetRepository;
 
     @Mock
-    UserRepository userRepository;
+    UserService userService;
 
     @BeforeEach
     void setUp() {
-        tweetService = new TweetServiceImpl(tweetRepository, userRepository);
+        tweetService = new TweetServiceImpl(tweetRepository, userService);
     }
+
     @DisplayName("Can create tweet")
     @Test
     void createTweet() {
@@ -42,14 +41,17 @@ class TweetServiceImplTest {
         Tweet tweet = new Tweet();
         tweet.setContent("hello");
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        // getCurrentUser() mock
+        when(userService.getCurrentUser()).thenReturn(user);
         when(tweetRepository.save(tweet)).thenReturn(tweet);
 
-        Tweet result = tweetService.createTweet(1L, tweet);
+        Tweet result = tweetService.createTweet(tweet);
 
         assertEquals("hello", result.getContent());
+        assertEquals(user, result.getUser());
         verify(tweetRepository).save(tweet);
     }
+
     @DisplayName("Can find tweets by user ıd")
     @Test
     void findTweetsByUserId() {
@@ -61,3 +63,4 @@ class TweetServiceImplTest {
         assertEquals(2, result.size());
     }
 }
+

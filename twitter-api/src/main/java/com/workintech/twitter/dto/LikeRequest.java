@@ -11,6 +11,4 @@ public class LikeRequest {
     @NotNull
     private Long tweetId;
 
-    @NotNull
-    private Long userId;
 }

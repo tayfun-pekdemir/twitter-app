@@ -43,7 +43,7 @@ class AuthenticationServiceTest {
     @Test
     void register() {
 
-        when(userRepository.findByUserName("userName"))
+        when(userRepository.findByAccountName("accountName"))
                 .thenReturn(Optional.empty());
 
         when(userRepository.findByEmail("test@example.com"))
@@ -59,7 +59,7 @@ class AuthenticationServiceTest {
         User result = authenticationService.register(
                 "Test",
                 "User",
-                "userName",
+                "accountName",
                 "test@example.com",
                 "123456"
         );

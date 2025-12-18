@@ -22,14 +22,14 @@ public class LikeController {
     @PostMapping("/like")
     @ResponseStatus(HttpStatus.CREATED)
     public LikeResponse like(@Valid @RequestBody LikeRequest request) {
-        Like like = likeService.like(request.getTweetId(), request.getUserId());
+        Like like = likeService.like(request.getTweetId());
         return new LikeResponse(like.getId(), like.getUser().getId(), like.getTweet().getId());
     }
 
     @PostMapping("/dislike")
     @ResponseStatus(HttpStatus.OK)
     public LikeResponse dislike(@Valid @RequestBody LikeRequest request) {
-        Like like = likeService.disLike(request.getTweetId(), request.getUserId());
+        Like like = likeService.disLike(request.getTweetId());
         return new LikeResponse(like.getId(), like.getUser().getId(), like.getTweet().getId());
     }
 }

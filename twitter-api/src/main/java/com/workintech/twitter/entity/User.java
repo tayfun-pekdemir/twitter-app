@@ -31,10 +31,10 @@ public class User implements UserDetails {
     @Size(min = 2, max = 30)
     private String lastName;
 
-    @Column(name="user_name", unique = true)
+    @Column(name="account_name", unique = true)
     @NotBlank
     @Size(min=4,max = 30)
-    private String userName;
+    private String accountName;
 
     @Column(name="email", unique = true)
     @NotBlank
@@ -71,7 +71,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return email;
     }
 
     @Override
@@ -93,4 +93,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

@@ -4,6 +4,6 @@ import com.workintech.twitter.entity.Retweet;
 
 public interface RetweetService {
 
-    Retweet retweet(Long userId, Long tweetId);
-    Retweet deleteRetweet(Long retweetId,Long userId);
+    Retweet retweet(Long tweetId);
+    Retweet deleteRetweet(Long retweetId);
 }

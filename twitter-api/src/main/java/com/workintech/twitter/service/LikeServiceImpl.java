@@ -8,7 +8,6 @@ import com.workintech.twitter.exception.NotAllowedException;
 import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.LikeRepository;
 import com.workintech.twitter.repository.TweetRepository;
-import com.workintech.twitter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +15,19 @@ import org.springframework.stereotype.Service;
 public class LikeServiceImpl implements LikeService {
 
     private TweetRepository tweetRepository;
-    private UserRepository userRepository;
     private LikeRepository likeRepository;
+    private UserService userService;
         @Autowired
-        public LikeServiceImpl(TweetRepository tweetRepository, UserRepository userRepository, LikeRepository likeRepository) {
+        public LikeServiceImpl(TweetRepository tweetRepository, UserService userService, LikeRepository likeRepository) {
         this.tweetRepository = tweetRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.likeRepository = likeRepository;
     }
 
     @Override
-    public Like like(Long tweetId, Long userId) {
+    public Like like(Long tweetId) {
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User not found by ID: " + userId)
-        );
+        User user = userService.getCurrentUser();
         Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(
                 () -> new NotFoundException("Tweet not found by ID: " + tweetId)
         );
@@ -48,11 +45,8 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public Like disLike(Long tweetId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(
-                        () -> new NotFoundException("User not found by ID: " + userId)
-                );
+    public Like disLike(Long tweetId) {
+        User user = userService.getCurrentUser();
         Tweet tweet = tweetRepository.findById(tweetId)
                 .orElseThrow(
                         () -> new NotFoundException("Tweet not found by ID: " + tweetId)

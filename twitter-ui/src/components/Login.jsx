@@ -2,7 +2,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export default function Login() {
+export default function Login({setCurrentUser}) {
 
   const initialFormData = {
     email:"",
@@ -26,6 +26,8 @@ export default function Login() {
     axios.post("http://localhost:3000/auth/login",formData,{withCredentials:true})
       .then(response => {
         console.log(response.data);
+        setCurrentUser(response.data.user);
+        localStorage.setItem("currentUser", JSON.stringify(response.data.user));
         navigate(`/profile/${response.data.user.id}`)
       })
       .catch(error => {

@@ -26,7 +26,7 @@ public class CommentController {
         Comment comment = new Comment();
         comment.setContent(request.getContent());
 
-        Comment savedComment = commentService.createComment(request.getUserId(), request.getTweetId(), comment);
+        Comment savedComment = commentService.createComment(request.getTweetId(), comment);
 
         return new CommentResponse(
                 savedComment.getId(),
@@ -45,7 +45,7 @@ public class CommentController {
         Comment comment = new Comment();
         comment.setContent(request.getContent());
 
-        Comment updatedComment = commentService.updateComment(commentId, request.getUserId(), comment);
+        Comment updatedComment = commentService.updateComment(commentId, comment);
 
         return new CommentResponse(
                 updatedComment.getId(),
@@ -57,8 +57,8 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
-    public CommentResponse deleteComment(@PathVariable Long commentId, @RequestBody CommentRequest request) {
-        Comment deletedComment = commentService.deleteComment(commentId, request.getUserId());
+    public CommentResponse deleteComment(@PathVariable Long commentId) {
+        Comment deletedComment = commentService.deleteComment(commentId);
 
         return new CommentResponse(
                 deletedComment.getId(),

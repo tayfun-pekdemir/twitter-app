@@ -14,7 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,22 +45,22 @@ class TweetControllerTest {
         savedTweet.setUser(user);
 
 
-        when(tweetService.createTweet(eq(1L), any(Tweet.class)))
+        when(tweetService.createTweet(any(Tweet.class)))
                 .thenReturn(savedTweet);
 
         mockMvc.perform(post("/tweet")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {
-                                  "userId": 1,
-                                  "content": "hello"
-                                }
-                                """))
+                        {
+                          "content": "hello"
+                        }
+                        """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tweetId").value(10))
                 .andExpect(jsonPath("$.content").value("hello"))
-                .andExpect(jsonPath("$.userId").value(1));
+                .andExpect(jsonPath("$.user.id").value(1));
+
     }
 }
 

@@ -8,32 +8,30 @@ import com.workintech.twitter.exception.NotAllowedException;
 import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.RetweetRepository;
 import com.workintech.twitter.repository.TweetRepository;
-import com.workintech.twitter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RetweetServiceImpl implements RetweetService{
 
-    private UserRepository userRepository;
+
     private TweetRepository tweetRepository;
     private RetweetRepository retweetRepository;
+    private UserService userService;
+
     @Autowired
-    public RetweetServiceImpl(UserRepository userRepository, TweetRepository tweetRepository, RetweetRepository retweetRepository) {
-        this.userRepository = userRepository;
+    public RetweetServiceImpl(UserService userService, TweetRepository tweetRepository, RetweetRepository retweetRepository) {
+        this.userService = userService;
         this.tweetRepository = tweetRepository;
         this.retweetRepository = retweetRepository;
     }
 
     @Override
-    public Retweet retweet(Long userId, Long tweetId) {
+    public Retweet retweet(Long tweetId) {
         Tweet tweet = tweetRepository.findById(tweetId).orElseThrow(
                 () -> new NotFoundException("Tweet not found by ID: " + tweetId)
         );
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User not found by ID: " + userId)
-        );
-
+        User user = userService.getCurrentUser();
         if(retweetRepository.findByUserAndTweet(user, tweet).isPresent()){
             throw new DuplicateException("You already retweeted this tweet");
         }
@@ -47,11 +45,12 @@ public class RetweetServiceImpl implements RetweetService{
     }
 
     @Override
-    public Retweet deleteRetweet(Long retweetId,Long userId) {
+    public Retweet deleteRetweet(Long retweetId) {
         Retweet retweet = retweetRepository.findById(retweetId).orElseThrow(
                 () -> new NotFoundException("Retweet not found by ID: " + retweetId)
         );
-        if(retweet.getUser().getId().equals(userId)) {
+        User user = userService.getCurrentUser();
+        if(retweet.getUser().getId().equals(user.getId())) {
             Tweet tweet = retweet.getTweet();
             tweet.decrementRetweetCount();
             tweetRepository.save(tweet);

@@ -5,7 +5,6 @@ import com.workintech.twitter.entity.User;
 import com.workintech.twitter.exception.NotAllowedException;
 import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.TweetRepository;
-import com.workintech.twitter.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,20 +15,17 @@ import java.util.List;
 public class TweetServiceImpl implements TweetService{
 
     private TweetRepository tweetRepository;
-    private UserRepository userRepository;
-
+    private UserService userService;
     @Autowired
-    public TweetServiceImpl(TweetRepository tweetRepository,UserRepository userRepository){
+    public TweetServiceImpl(TweetRepository tweetRepository, UserService userService) {
         this.tweetRepository = tweetRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
-    public Tweet createTweet(Long userId, Tweet tweet) {
+    public Tweet createTweet(Tweet tweet) {
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User not found by ID: " + userId)
-        );
+        User user = userService.getCurrentUser();
         tweet.setUser(user);
         return tweetRepository.save(tweet);
     }
@@ -47,9 +43,10 @@ public class TweetServiceImpl implements TweetService{
     }
 
     @Override
-    public Tweet updateTweet(Long tweetId, Long userId, Tweet tweet) {
+    public Tweet updateTweet(Long tweetId, Tweet tweet) {
         Tweet existingTweet = findById(tweetId);
-        if (existingTweet.getUser().getId().equals(userId)) {
+        User user = userService.getCurrentUser();
+        if (existingTweet.getUser().getId().equals(user.getId())) {
             existingTweet.setContent(tweet.getContent());
             return tweetRepository.save(existingTweet);
         } else {
@@ -58,9 +55,10 @@ public class TweetServiceImpl implements TweetService{
     }
 
     @Override
-    public Tweet deleteTweet(Long tweetId, Long userId) {
+    public Tweet deleteTweet(Long tweetId) {
         Tweet tweet = findById(tweetId);
-        if(tweet.getUser().getId().equals(userId)){
+        User user = userService.getCurrentUser();
+        if(tweet.getUser().getId().equals(user.getId())){
             tweetRepository.delete(tweet);
             return tweet;
         } else {

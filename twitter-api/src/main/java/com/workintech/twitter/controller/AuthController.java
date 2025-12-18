@@ -33,14 +33,14 @@ public class AuthController {
         User registeredUser = authenticationService.register(
                 request.getFirstName(),
                 request.getLastName(),
-                request.getUserName(),
+                request.getAccountName(),
                 request.getEmail(),
                 request.getPassword()
         );
         return new RegistrationResponse(
                 registeredUser.getFirstName(),
                 registeredUser.getLastName(),
-                registeredUser.getUsername(),
+                registeredUser.getAccountName(),
                 registeredUser.getEmail()
         );
     }

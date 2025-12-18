@@ -7,7 +7,7 @@ export default function Register() {
     let initialFormData = {
         firstName:"",
         lastName:"",
-        userName:"",
+        accountName:"",
         email:"",
         password:""
     }
@@ -65,10 +65,10 @@ export default function Register() {
 
           <input
             type="text"
-            name="userName"
+            name="accountName"
             onChange={handleChange}
-            value={formData.userName}
-            placeholder="Username"
+            value={formData.accountName}
+            placeholder="Account name"
             className="bg-[#141619] placeholder-[#B3B4BD] text-[#B3B4BD] rounded-md shadow-lg shadow-black/50 px-4 py-2 w-full
                        focus:outline-none focus:ring-2 focus:ring-[#0A21C0]"
           />

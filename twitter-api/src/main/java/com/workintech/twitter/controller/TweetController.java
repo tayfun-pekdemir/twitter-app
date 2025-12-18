@@ -1,6 +1,5 @@
 package com.workintech.twitter.controller;
 
-import com.workintech.twitter.dto.DeleteTweetRequest;
 import com.workintech.twitter.dto.TweetRequest;
 import com.workintech.twitter.dto.TweetResponse;
 import com.workintech.twitter.dto.UserDTO;
@@ -31,7 +30,7 @@ public class TweetController {
         Tweet tweet = new Tweet();
         tweet.setContent(request.getContent());
 
-        Tweet savedTweet = tweetService.createTweet(request.getUserId(), tweet);
+        Tweet savedTweet = tweetService.createTweet(tweet);
 
         return mapToResponse(savedTweet);
     }
@@ -62,7 +61,7 @@ public class TweetController {
         Tweet tweet = new Tweet();
         tweet.setContent(request.getContent());
 
-        Tweet updatedTweet = tweetService.updateTweet(tweetId, request.getUserId(), tweet);
+        Tweet updatedTweet = tweetService.updateTweet(tweetId, tweet);
 
         return mapToResponse(updatedTweet);
 
@@ -70,9 +69,8 @@ public class TweetController {
 
     @DeleteMapping("/{tweetId}")
     @ResponseStatus(HttpStatus.OK)
-    public TweetResponse deleteTweet(@PathVariable Long tweetId,
-                                     @Valid @RequestBody DeleteTweetRequest request) {
-        Tweet deletedTweet = tweetService.deleteTweet(tweetId, request.getUserId());
+    public TweetResponse deleteTweet(@PathVariable Long tweetId) {
+        Tweet deletedTweet = tweetService.deleteTweet(tweetId);
 
         return mapToResponse(deletedTweet);
 
@@ -84,7 +82,7 @@ public class TweetController {
                 new UserDTO(tweet.getUser().getId(),
                         tweet.getUser().getFirstName(),
                         tweet.getUser().getLastName(),
-                        tweet.getUser().getUsername(),
+                        tweet.getUser().getAccountName(),
                         tweet.getUser().getEmail()),
                 tweet.getLikeCount(),
                 tweet.getRetweetCount(),
