@@ -3,7 +3,6 @@ package com.workintech.twitter.service;
 import com.workintech.twitter.entity.Role;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.exception.DuplicateException;
-import com.workintech.twitter.exception.NotAllowedException;
 import com.workintech.twitter.exception.NotFoundException;
 import com.workintech.twitter.repository.RoleRepository;
 import com.workintech.twitter.repository.UserRepository;
@@ -53,13 +52,4 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public User login(String email,String password){
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException("User not found by email: " + email));
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new NotAllowedException("Invalid email or password");
-        }
-        return user;
-    }
 }

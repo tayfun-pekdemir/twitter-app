@@ -3,6 +3,7 @@ package com.workintech.twitter.controller;
 import com.workintech.twitter.dto.*;
 import com.workintech.twitter.entity.User;
 import com.workintech.twitter.service.AuthenticationService;
+import com.workintech.twitter.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private UserService userService;
     private AuthenticationService authenticationService;
     private AuthenticationManager authenticationManager;
-
     @Autowired
-    public AuthController(AuthenticationService authenticationService,AuthenticationManager authenticationManager) {
+    public AuthController(UserService userService, AuthenticationService authenticationService, AuthenticationManager authenticationManager) {
+        this.userService = userService;
         this.authenticationService = authenticationService;
         this.authenticationManager = authenticationManager;
     }
@@ -59,7 +61,7 @@ public class AuthController {
 
         request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-        User user = authenticationService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        User user = userService.getCurrentUser();
 
         return new LoginResponse(
                 "Login successful for user: " + user.getUsername(),
