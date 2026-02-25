@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -23,7 +23,7 @@ export default function Login({setCurrentUser}) {
 
     e.preventDefault();
 
-    axios.post("http://localhost:3000/auth/login",formData,{withCredentials:true})
+    axiosInstance.post("/auth/login",formData)
       .then(response => {
         console.log(response.data);
         setCurrentUser(response.data.user);

@@ -1,6 +1,6 @@
 import { Link,useNavigate} from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
 export default function Register() {
 
@@ -24,7 +24,7 @@ export default function Register() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.post("http://localhost:3000/auth/register", formData,{ withCredentials: true })
+        axiosInstance.post("/auth/register", formData)
         .then(response => {
             console.log(response.data);
             navigate("/");

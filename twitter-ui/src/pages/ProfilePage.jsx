@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import TweetCard from "../components/TweetCard";
+import axiosInstance from "../api/axiosInstance";
 
 export default function ProfilePage({currentUser}) {
   const { id } = useParams();
@@ -13,7 +13,7 @@ export default function ProfilePage({currentUser}) {
   const [newTweet, setNewTweet] = useState(initialNewTweet);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/tweet/findByUserId/${id}`, { withCredentials: true })
+    axiosInstance.get(`/tweet/findByUserId/${id}`)
       .then(response => {
         setTweets(response.data);
         console.log("Response data:", response.data);})
@@ -26,7 +26,7 @@ export default function ProfilePage({currentUser}) {
 
   const newTweetHandleSubmit = (e) => {
     e.preventDefault();
-    axios.post("http://localhost:3000/tweet", newTweet, { withCredentials: true })
+    axiosInstance.post("/tweet", newTweet)
       .then(response => {
         setNewTweet(initialNewTweet);
         
