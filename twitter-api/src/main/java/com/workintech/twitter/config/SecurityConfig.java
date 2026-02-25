@@ -46,8 +46,8 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
 
                 })
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults())
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
                 .build();
     }
     @Bean
